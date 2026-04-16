@@ -16,6 +16,7 @@ BASE_URL = os.environ.get("OCULOS_BASE_URL", "http://127.0.0.1:7878")
 @mcp.tool()
 async def list_windows() -> dict:
     """List all open windows on the desktop with their PID, window handle, executable name, and title. Use this first to discover what applications are running and to get PIDs needed for other operations."""
+    _track("list_windows")
     async with httpx.AsyncClient(timeout=15.0) as client:
         response = await client.get(f"{BASE_URL}/windows")
         response.raise_for_status()
@@ -24,6 +25,7 @@ async def list_windows() -> dict:
 
 @mcp.tool()
 async def find_elements(
+    _track("find_elements")
     pid: int,
     query: Optional[str] = None,
     element_type: Optional[str] = None
@@ -43,6 +45,7 @@ async def find_elements(
 @mcp.tool()
 async def click_element(oculos_id: str) -> dict:
     """Click a UI element by its oculos_id. Use this after find_elements returns the target element. Works for buttons, checkboxes, menu items, and other clickable controls."""
+    _track("click_element")
     async with httpx.AsyncClient(timeout=15.0) as client:
         response = await client.post(
             f"{BASE_URL}/elements/{oculos_id}/click"
@@ -57,6 +60,7 @@ async def click_element(oculos_id: str) -> dict:
 @mcp.tool()
 async def type_text(oculos_id: str, text: str) -> dict:
     """Type text into a focused or specified UI element such as a text field or input box. Use this to fill forms, enter search queries, or input data into any editable field in a desktop application."""
+    _track("type_text")
     async with httpx.AsyncClient(timeout=15.0) as client:
         response = await client.post(
             f"{BASE_URL}/elements/{oculos_id}/type",
@@ -72,6 +76,7 @@ async def type_text(oculos_id: str, text: str) -> dict:
 @mcp.tool()
 async def get_element_tree(pid: int) -> dict:
     """Retrieve the full accessibility tree of UI elements for a given application window. Use this to get a complete structural overview of all elements in an app when you need to understand its full layout or when find_elements is too narrow."""
+    _track("get_element_tree")
     async with httpx.AsyncClient(timeout=30.0) as client:
         response = await client.get(f"{BASE_URL}/tree", params={"pid": pid})
         response.raise_for_status()
@@ -80,6 +85,7 @@ async def get_element_tree(pid: int) -> dict:
 
 @mcp.tool()
 async def wait_for_element(
+    _track("wait_for_element")
     pid: int,
     query: str,
     element_type: Optional[str] = None,
@@ -107,6 +113,7 @@ async def wait_for_element(
 @mcp.tool()
 async def batch_interact(actions: List[dict]) -> dict:
     """Execute multiple UI interactions in sequence as a single batch operation. Use this to perform a series of clicks and text inputs efficiently without making separate API calls for each action, such as filling out a form or navigating a multi-step workflow."""
+    _track("batch_interact")
     async with httpx.AsyncClient(timeout=60.0) as client:
         response = await client.post(
             f"{BASE_URL}/batch",
@@ -122,6 +129,7 @@ async def batch_interact(actions: List[dict]) -> dict:
 @mcp.tool()
 async def get_element_value(oculos_id: str) -> dict:
     """Read the current value, text content, or state of a specific UI element by its oculos_id. Use this to check what is displayed in a text field, the result shown in a calculator, whether a checkbox is checked, or any other element's current state."""
+    _track("get_element_value")
     async with httpx.AsyncClient(timeout=15.0) as client:
         response = await client.get(f"{BASE_URL}/elements/{oculos_id}/value")
         response.raise_for_status()
